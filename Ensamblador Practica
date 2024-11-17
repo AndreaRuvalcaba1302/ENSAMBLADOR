@@ -1,0 +1,82 @@
+char data[26];
+int number_of_bytes_received;
+int w, x, y, z;
+
+// Definimos pines de botones
+const int buttonSum = 2;
+const int buttonDiv = 3;
+const int buttonMul = 4;
+const int buttonRes = 5;
+
+void trimString(char* str) {
+  int i = 0;
+  while (str[i] != '\0') {
+    if (str[i] == '\r' || str[i] == '\n' || str[i] == ' ') {
+      str[i] = '\0';
+      break;
+    }
+    i++;
+  }
+}
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("En línea, esperando instrucciones...");
+  
+  // Configuramos los pines de botones como entrada
+  pinMode(buttonSum, INPUT_PULLUP);
+  pinMode(buttonDiv, INPUT_PULLUP);
+  pinMode(buttonMul, INPUT_PULLUP);
+  pinMode(buttonRes, INPUT_PULLUP);
+}
+
+void loop() {
+  // Leer comandos desde el puerto serie
+  if (Serial.available()) {
+    number_of_bytes_received = Serial.readBytesUntil(13, data, 25);
+    data[number_of_bytes_received] = 0;
+
+    Serial.print("Recibido: ");
+    Serial.println(data);
+
+    trimString(data); // Limpiar cadena
+
+    if (strcmp(data, "sum") == 0) {
+      Serial.println("Suma realizada");
+      w = 0; x = 0; y = 0; z = 1;
+    } else if (strcmp(data, "di") == 0) {
+      Serial.println("División realizada");
+      w = 1; x = 1; y = 1; z = 1;
+    } else if (strcmp(data, "mul") == 0) {
+      Serial.println("Multiplicación realizada");
+      w = 2; x = 2; y = 2; z = 2;
+    } else if (strcmp(data, "res") == 0) {
+      Serial.println("Resta realizada");
+      w = -1; x = -1; y = -1; z = -1;
+    } else {
+      Serial.println("Comando no reconocido");
+    }
+  }
+
+  // Leer botones físicos
+  if (digitalRead(buttonSum) == LOW) {
+    Serial.println("Botón Suma presionado");
+    w = 0; x = 0; y = 0; z = 1;
+    delay(200); // Anti-rebote
+  }
+  if (digitalRead(buttonDiv) == LOW) {
+    Serial.println("Botón División presionado");
+    w = 1; x = 1; y = 1; z = 1;
+    delay(200); // Anti-rebote
+  }
+  if (digitalRead(buttonMul) == LOW) {
+    Serial.println("Botón Multiplicación presionado");
+    w = 2; x = 2; y = 2; z = 2;
+    delay(200); // Anti-rebote
+  }
+  if (digitalRead(buttonRes) == LOW) {
+    Serial.println("Botón Resta presionado");
+    w = -1; x = -1; y = -1; z = -1;
+    delay(200); // Anti-rebote
+  }
+}
